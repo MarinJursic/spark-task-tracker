@@ -4,6 +4,12 @@ A focused full-stack task tracker for adding, editing, assigning, and completing
 
 ![Spark Team Task Tracker desktop view](docs/assets/task-tracker-desktop.png)
 
+## Submission walkthrough
+
+- [Watch the 32-second product preview](docs/assets/spark-task-tracker-demo.mp4), covering add, assign, edit, complete, search, and filtering.
+- Open the PowerPoint in `output/presentation/` to play the same walkthrough directly from slide 3.
+- Use the prepared [2–5 minute Loom narrative](docs/LOOM_SCRIPT.md) for the requested interview submission video.
+
 ## What it does
 
 - Adds tasks with a required title, description, and assignee.
@@ -165,8 +171,8 @@ frontend/
   src/styles/          Small, responsibility-based stylesheets
 docs/
   LOOM_SCRIPT.md       Ready-to-record 2-5 minute walkthrough
-  assets/              Verified desktop and mobile captures
-output/presentation/   Submission presentation
+  assets/              Verified captures and 32-second product preview
+output/presentation/   Submission presentation with embedded video
 ```
 
 For the video submission, use the prepared [Loom walkthrough](docs/LOOM_SCRIPT.md).
