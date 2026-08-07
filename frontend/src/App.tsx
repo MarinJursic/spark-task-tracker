@@ -50,7 +50,9 @@ export default function App() {
         <section className="page-intro">
           <div>
             <span className="eyebrow">Team workspace</span>
-            <h1>Keep every task moving.</h1>
+            <h1>
+              Keep every task <em>moving.</em>
+            </h1>
             <p>Add, assign, update, and complete work from one focused view.</p>
           </div>
           <button
@@ -77,8 +79,8 @@ export default function App() {
             <span className="spinner" aria-hidden="true" />
             <p>Loading the team’s tasks…</p>
           </section>
-        ) : tracker.tasks.length === 0 && tracker.error ? (
-          <section className="empty-state error-state">
+        ) : tracker.tasks.length === 0 && tracker.loadError ? (
+          <section className="empty-state error-state" role="alert">
             <RefreshCw size={30} aria-hidden="true" />
             <h2>Tasks could not be loaded</h2>
             <p>Check the API connection, then try again.</p>
@@ -106,8 +108,8 @@ export default function App() {
           onSubmit={submitTask}
         />
       )}
-      {tracker.error && tracker.tasks.length > 0 && (
-        <Toast message={tracker.error} onDismiss={tracker.clearError} />
+      {tracker.actionError && (
+        <Toast message={tracker.actionError} onDismiss={tracker.clearActionError} />
       )}
     </>
   );

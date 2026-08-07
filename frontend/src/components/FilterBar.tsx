@@ -29,7 +29,7 @@ export function FilterBar({ query, status, onQueryChange, onStatusChange }: Filt
           onChange={(event) => onQueryChange(event.target.value)}
         />
       </label>
-      <div className="status-filters" aria-label="Filter by completion status">
+      <div className="status-filters" role="group" aria-label="Filter by completion status">
         {filters.map((filter) => (
           <button
             className={status === filter.value ? "active" : undefined}

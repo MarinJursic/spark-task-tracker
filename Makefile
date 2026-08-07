@@ -24,5 +24,7 @@ lint:
 	cd frontend && pnpm lint
 
 check: lint test
+	.venv/bin/python backend/manage.py makemigrations --check --dry-run
 	DJANGO_DEBUG=false DJANGO_SECRET_KEY=deployment-check-only-9zW4rT7pQ2nM8xK5cV1bL6sH3jF0dG .venv/bin/python backend/manage.py check --deploy
+	! DJANGO_DEBUG=false DJANGO_SECRET_KEY= .venv/bin/python backend/manage.py check --deploy >/dev/null 2>&1
 	cd frontend && pnpm build

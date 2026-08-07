@@ -35,12 +35,12 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-export function fetchTasks(): Promise<Task[]> {
-  return request<Task[]>("/tasks/");
+export function fetchTasks(signal?: AbortSignal): Promise<Task[]> {
+  return request<Task[]>("/tasks/", { signal });
 }
 
-export function fetchTeamMembers(): Promise<TeamMember[]> {
-  return request<TeamMember[]>("/team-members/");
+export function fetchTeamMembers(signal?: AbortSignal): Promise<TeamMember[]> {
+  return request<TeamMember[]>("/team-members/", { signal });
 }
 
 export function createTask(input: TaskInput): Promise<Task> {

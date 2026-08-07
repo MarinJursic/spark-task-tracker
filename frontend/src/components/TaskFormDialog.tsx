@@ -21,6 +21,11 @@ export function TaskFormDialog({
   onSubmit,
 }: TaskFormDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const titleId = "task-dialog-title";
+  const titleLabelId = "task-title-label";
+  const titleCountId = "task-title-count";
+  const descriptionLabelId = "task-description-label";
+  const descriptionCountId = "task-description-count";
   const [form, setForm] = useState(() => ({
     ...EMPTY_FORM,
     title: task?.title ?? "",
@@ -49,54 +54,64 @@ export function TaskFormDialog({
   };
 
   return (
-    <dialog ref={dialogRef} className="task-dialog" onCancel={onClose}>
-      <form method="dialog" onSubmit={submit}>
+    <dialog ref={dialogRef} className="task-dialog" aria-labelledby={titleId} onCancel={onClose}>
+      <form method="dialog" aria-busy={isSaving} onSubmit={submit}>
         <div className="dialog-header">
           <div>
             <span className="eyebrow">{task ? "Update the details" : "Create clear ownership"}</span>
-            <h2>{task ? "Edit task" : "Add a task"}</h2>
+            <h2 id={titleId}>{task ? "Edit task" : "Add a task"}</h2>
           </div>
           <button className="icon-button" type="button" aria-label="Close dialog" onClick={onClose}>
             <X size={20} aria-hidden="true" />
           </button>
         </div>
 
-        <label>
-          <span>Title</span>
+        <label htmlFor="task-title">
+          <span id={titleLabelId}>Title</span>
           <input
+            id="task-title"
             autoFocus
             required
+            disabled={isSaving}
             maxLength={120}
+            aria-labelledby={titleLabelId}
+            aria-describedby={titleCountId}
             value={form.title}
             placeholder="What needs to be done?"
             onChange={(event) => setForm({ ...form, title: event.target.value })}
           />
-          <small>{form.title.length}/120</small>
+          <small id={titleCountId}>{form.title.length}/120</small>
         </label>
 
-        <label>
-          <span>Description</span>
+        <label htmlFor="task-description">
+          <span id={descriptionLabelId}>Description</span>
           <textarea
+            id="task-description"
             required
+            disabled={isSaving}
             rows={5}
             maxLength={1000}
+            aria-labelledby={descriptionLabelId}
+            aria-describedby={descriptionCountId}
             value={form.description}
             placeholder="Add enough context for someone to take action."
             onChange={(event) => setForm({ ...form, description: event.target.value })}
           />
-          <small>{form.description.length}/1000</small>
+          <small id={descriptionCountId}>{form.description.length}/1000</small>
         </label>
 
-        <label>
+        <label htmlFor="task-assignee">
           <span>Assign to</span>
           <select
+            id="task-assignee"
             required
+            disabled={isSaving}
             value={form.assigneeId}
             onChange={(event) => setForm({ ...form, assigneeId: event.target.value })}
           >
             {members.map((member) => (
               <option key={member.id} value={member.id}>
-                {member.name} · {member.role}
+                {member.name}
               </option>
             ))}
           </select>

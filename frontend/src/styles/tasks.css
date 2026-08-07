@@ -30,10 +30,10 @@
 }
 
 .complete-control {
-  width: 29px;
-  height: 29px;
+  width: 32px;
+  height: 32px;
   padding: 0;
-  border: 2px solid #abaeac;
+  border: 2px solid #7d817e;
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -52,6 +52,10 @@
   align-items: start;
   justify-content: space-between;
   gap: 20px;
+}
+
+.task-content {
+  min-width: 0;
 }
 
 .status-label {
@@ -80,6 +84,7 @@
   font-size: 1.2rem;
   line-height: 1.3;
   letter-spacing: -0.015em;
+  overflow-wrap: anywhere;
 }
 
 .completed h2 {
@@ -112,7 +117,7 @@
   font-weight: 800;
 }
 
-.avatar-orange { background: #c95d05; }
+.avatar-orange { background: #b55200; }
 .avatar-violet { background: #6c52a2; }
 .avatar-blue { background: #316b93; }
 .avatar-green { background: #35765e; }

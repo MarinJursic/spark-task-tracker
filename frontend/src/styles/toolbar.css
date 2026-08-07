@@ -20,7 +20,7 @@
 }
 
 .search-field:focus-within {
-  border-color: var(--orange);
+  border-color: var(--orange-dark);
   box-shadow: 0 0 0 3px rgb(255 122 0 / 13%);
 }
 

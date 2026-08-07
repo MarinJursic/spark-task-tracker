@@ -132,7 +132,7 @@ make check
 This covers:
 
 - migration drift and Django system checks;
-- 12 backend model/API tests, including every required behavior;
+- 12 backend model/API tests, including every required behavior and hardened API boundaries;
 - Python lint and formatting checks;
 - frontend lint and strict TypeScript compilation;
 - 3 component interaction tests;

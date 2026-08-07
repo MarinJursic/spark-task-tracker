@@ -2,17 +2,15 @@ export function AppHeader() {
   return (
     <header className="app-header">
       <div className="header-inner">
-        <a className="brand" href="#main-content" aria-label="Spark Team Tasks home">
+        <div className="brand" aria-label="Spark Team Tasks">
           <span className="brand-mark" aria-hidden="true">
-            <span />
-            <span />
             <span />
           </span>
           <span className="brand-copy">
             <strong>SPARK</strong>
-            <small>TEAM TASKS</small>
+            <small>TUTORING · TEAM TASKS</small>
           </span>
-        </a>
+        </div>
         <span className="header-note">Focused work. Clear ownership.</span>
       </div>
     </header>

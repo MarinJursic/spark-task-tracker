@@ -8,7 +8,6 @@ html {
 
 body {
   margin: 0;
-  min-width: 320px;
   min-height: 100vh;
   color: var(--ink);
   background: var(--canvas);
@@ -31,7 +30,7 @@ button {
 }
 
 :focus-visible {
-  outline: 3px solid rgb(255 122 0 / 42%);
+  outline: 3px solid var(--orange-dark);
   outline-offset: 3px;
 }
 

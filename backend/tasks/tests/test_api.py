@@ -51,6 +51,22 @@ class TaskApiTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(set(response.data), {"title", "description", "assignee_id"})
 
+        invalid_content_response = self.client.post(
+            reverse("task-list"),
+            {
+                "title": "   ",
+                "description": "   ",
+                "assignee_id": 999_999,
+            },
+            format="json",
+        )
+
+        self.assertEqual(invalid_content_response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            set(invalid_content_response.data),
+            {"title", "description", "assignee_id"},
+        )
+
     def test_edit_task_and_reassign(self) -> None:
         new_member = TeamMember.objects.create(name="Second Test Member", role="Reviewer")
         url = reverse("task-detail", kwargs={"pk": self.open_task.id})
@@ -70,10 +86,17 @@ class TaskApiTests(APITestCase):
         url = reverse("task-detail", kwargs={"pk": self.open_task.id})
 
         complete_response = self.client.patch(url, {"completed": True}, format="json")
+        self.assertEqual(complete_response.status_code, status.HTTP_200_OK)
+        self.open_task.refresh_from_db()
+        self.assertTrue(self.open_task.completed)
+
         incomplete_response = self.client.patch(url, {"completed": False}, format="json")
+        self.assertEqual(incomplete_response.status_code, status.HTTP_200_OK)
 
         self.assertTrue(complete_response.data["completed"])
+        self.open_task.refresh_from_db()
         self.assertFalse(incomplete_response.data["completed"])
+        self.assertFalse(self.open_task.completed)
 
     def test_filter_by_status(self) -> None:
         response = self.client.get(reverse("task-list"), {"status": "completed"})
@@ -93,6 +116,11 @@ class TaskApiTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("status", response.data)
+
+        oversized_search_response = self.client.get(reverse("task-list"), {"q": "a" * 101})
+
+        self.assertEqual(oversized_search_response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("q", oversized_search_response.data)
 
     def test_delete_is_not_part_of_the_scoped_api(self) -> None:
         url = reverse("task-detail", kwargs={"pk": self.open_task.id})

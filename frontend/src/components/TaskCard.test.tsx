@@ -15,18 +15,14 @@ const task: Task = {
 };
 
 describe("TaskCard", () => {
-  it("shows the required task information", () => {
-    render(<TaskCard task={task} isSaving={false} onEdit={vi.fn()} onToggle={vi.fn()} />);
+  it("shows task details and exposes the required actions", () => {
+    const onEdit = vi.fn();
+    const onToggle = vi.fn();
+    render(<TaskCard task={task} isSaving={false} onEdit={onEdit} onToggle={onToggle} />);
 
     expect(screen.getByRole("heading", { name: task.title })).toBeInTheDocument();
     expect(screen.getByText("In progress")).toBeInTheDocument();
     expect(screen.getByText(task.assignee.name)).toBeInTheDocument();
-  });
-
-  it("exposes edit and completion actions", () => {
-    const onEdit = vi.fn();
-    const onToggle = vi.fn();
-    render(<TaskCard task={task} isSaving={false} onEdit={onEdit} onToggle={onToggle} />);
 
     fireEvent.click(screen.getByRole("button", { name: `Edit ${task.title}` }));
     fireEvent.click(screen.getByRole("button", { name: `Mark ${task.title} as complete` }));
