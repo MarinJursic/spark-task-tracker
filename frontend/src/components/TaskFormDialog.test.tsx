@@ -23,12 +23,14 @@ describe("TaskFormDialog", () => {
         task={null}
         members={[member]}
         isSaving={false}
+        errorMessage="Task could not be saved."
         onClose={onClose}
         onSubmit={onSubmit}
       />,
     );
 
     expect(screen.getByRole("dialog", { name: "Add a task" })).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent("Task could not be saved.");
     fireEvent.change(screen.getByRole("textbox", { name: "Title" }), {
       target: { value: "  Review notes  " },
     });

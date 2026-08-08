@@ -2,11 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 
 import type { Task, TaskInput, TeamMember } from "../types";
+import { DialogError } from "./DialogError";
 
 interface TaskFormDialogProps {
   task: Task | null;
   members: TeamMember[];
   isSaving: boolean;
+  errorMessage: string | null;
   onClose: () => void;
   onSubmit: (input: TaskInput) => Promise<boolean>;
 }
@@ -17,6 +19,7 @@ export function TaskFormDialog({
   task,
   members,
   isSaving,
+  errorMessage,
   onClose,
   onSubmit,
 }: TaskFormDialogProps) {
@@ -116,6 +119,8 @@ export function TaskFormDialog({
             ))}
           </select>
         </label>
+
+        <DialogError message={errorMessage} />
 
         <div className="dialog-actions">
           <button className="button secondary" type="button" onClick={onClose}>

@@ -2,10 +2,12 @@ import { useEffect, useRef } from "react";
 import { Trash2, X } from "lucide-react";
 
 import type { Task } from "../types";
+import { DialogError } from "./DialogError";
 
 interface DeleteTaskDialogProps {
   task: Task;
   isDeleting: boolean;
+  errorMessage: string | null;
   onClose: () => void;
   onConfirm: () => Promise<boolean>;
 }
@@ -13,6 +15,7 @@ interface DeleteTaskDialogProps {
 export function DeleteTaskDialog({
   task,
   isDeleting,
+  errorMessage,
   onClose,
   onConfirm,
 }: DeleteTaskDialogProps) {
@@ -68,6 +71,8 @@ export function DeleteTaskDialog({
             undone.
           </p>
         </div>
+
+        <DialogError message={errorMessage} />
 
         <div className="dialog-actions">
           <button className="button secondary" type="button" disabled={isDeleting} onClick={onClose}>

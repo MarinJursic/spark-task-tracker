@@ -22,7 +22,7 @@ clarity, maintainable boundaries, accessibility, and deliberate scope.
 | Edit a task | The same form is reused with existing values populated. |
 | Assign a task | Tasks reference one of four seeded team members. Reassignment is supported. |
 | Mark complete | A task can be toggled complete or incomplete without losing its content or owner. |
-| Additional requested enhancement: delete | A separately confirmed permanent action removes a task from the API and UI. |
+| Additional focused enhancement: delete | A separately confirmed permanent action removes a task from the API and UI. |
 | Show title, status, and team member | Every task card exposes all three at a glance. |
 | Persist changes | All writes pass through the Django REST API and Django ORM. |
 | Optional product polish | Search, status filters, progress summary, responsive layouts, and clear loading/error states. |
@@ -41,11 +41,13 @@ The primary workflow is intentionally contained in one page:
 4. Editing uses the same form and can update wording or ownership.
 5. Completion is a small `PATCH` request; completed tasks move below open work.
 6. Deletion requires a separate confirmation and removes the task only after the API succeeds.
-7. Search and status filters update the visible list without losing the canonical task state.
+7. A compact confirmation reports every successful create, update, status change, and deletion.
+8. Search and status filters update the visible list without losing the canonical task state.
 
 Initial-load failures and action failures are intentionally separate. A failed initial request
 shows a retry state, while a failed create, edit, status change, or deletion leaves the current task list
-visible and reports the action error in a dismissible notification.
+visible and reports the action error in a dismissible notification. Successful actions use a
+small, polite live-region notification that clears automatically without interrupting the next action.
 
 ## Technology choices
 
@@ -223,6 +225,7 @@ focused page.
 - The mount request uses `AbortController` so an unmounted component is not updated.
 - Loading errors can be retried without refreshing the page.
 - Mutation errors do not replace already-loaded content.
+- Compact success notifications confirm create, update, complete/reopen, and delete outcomes.
 - Inputs and actions are disabled during a save to prevent duplicate submissions.
 - Successful create/update mutations replace the canonical task returned by the server and
   reapply ordering; successful deletion removes only the matching task.
@@ -235,6 +238,7 @@ The interface was reviewed against relevant WCAG 2.2 behaviours:
 - an accessible name for the modal and explicit field labels/descriptions;
 - visible, high-contrast keyboard focus;
 - live progress and task-count updates;
+- polite success status messages and assertive error alerts;
 - semantic `progressbar` state;
 - disabled and busy states during writes;
 - touch-sized controls and keyboard-operable actions;
@@ -331,7 +335,7 @@ make check
 | Django deployment check | Verifies secure production configuration with an explicit secret. |
 | Negative production-secret check | Proves production startup fails when the secret is missing. |
 | ESLint | React/TypeScript correctness and maintainability rules. |
-| 3 Vitest interaction tests | Task rendering/actions, filters, accessible form submission, and input normalization. |
+| 5 Vitest interaction tests | Task rendering/actions, filters, accessible form submission, input normalization, and notification behaviour. |
 | Strict TypeScript and Vite build | Type integrity and production bundling. |
 
 The same backend and frontend checks run independently in GitHub Actions on every pull request

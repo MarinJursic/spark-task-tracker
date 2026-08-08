@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Plus, RefreshCw } from "lucide-react";
 
 import { AppHeader } from "./components/AppHeader";
@@ -18,6 +18,8 @@ export default function App() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [deletingTask, setDeletingTask] = useState<Task | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const clearSuccessMessage = useCallback(() => setSuccessMessage(null), []);
 
   const filteredTasks = useMemo(() => {
     const search = query.trim().toLowerCase();
@@ -31,17 +33,69 @@ export default function App() {
   }, [query, status, tracker.tasks]);
 
   const openCreateDialog = () => {
+    tracker.clearActionError();
+    clearSuccessMessage();
     setEditingTask(null);
     setDialogOpen(true);
   };
 
   const openEditDialog = (task: Task) => {
+    tracker.clearActionError();
+    clearSuccessMessage();
     setEditingTask(task);
     setDialogOpen(true);
   };
 
-  const submitTask = (input: TaskInput) =>
-    editingTask ? tracker.editTask(editingTask.id, input) : tracker.addTask(input);
+  const openDeleteDialog = (task: Task) => {
+    tracker.clearActionError();
+    clearSuccessMessage();
+    setDeletingTask(task);
+  };
+
+  const closeTaskDialog = () => {
+    tracker.clearActionError();
+    setDialogOpen(false);
+  };
+
+  const closeDeleteDialog = () => {
+    tracker.clearActionError();
+    setDeletingTask(null);
+  };
+
+  const submitTask = async (input: TaskInput) => {
+    clearSuccessMessage();
+    const wasEditing = editingTask !== null;
+    const succeeded = wasEditing
+      ? await tracker.editTask(editingTask.id, input)
+      : await tracker.addTask(input);
+
+    if (succeeded) {
+      setSuccessMessage(wasEditing ? "Task updated." : "Task created.");
+    }
+
+    return succeeded;
+  };
+
+  const toggleTask = async (task: Task) => {
+    clearSuccessMessage();
+    const succeeded = await tracker.toggleTask(task);
+
+    if (succeeded) {
+      setSuccessMessage(task.completed ? "Task reopened." : "Task completed.");
+    }
+  };
+
+  const deleteTask = async () => {
+    if (!deletingTask) return false;
+
+    clearSuccessMessage();
+    const succeeded = await tracker.deleteTask(deletingTask.id);
+    if (succeeded) {
+      setSuccessMessage("Task deleted.");
+    }
+
+    return succeeded;
+  };
 
   const completedCount = tracker.tasks.filter((task) => task.completed).length;
 
@@ -96,8 +150,8 @@ export default function App() {
             hasFilters={Boolean(query.trim()) || status !== "all"}
             isSaving={tracker.isSaving}
             onEdit={openEditDialog}
-            onToggle={(task) => void tracker.toggleTask(task)}
-            onDelete={setDeletingTask}
+            onToggle={(task) => void toggleTask(task)}
+            onDelete={openDeleteDialog}
           />
         )}
       </main>
@@ -107,7 +161,8 @@ export default function App() {
           task={editingTask}
           members={tracker.members}
           isSaving={tracker.isSaving}
-          onClose={() => setDialogOpen(false)}
+          errorMessage={tracker.actionError}
+          onClose={closeTaskDialog}
           onSubmit={submitTask}
         />
       )}
@@ -115,12 +170,21 @@ export default function App() {
         <DeleteTaskDialog
           task={deletingTask}
           isDeleting={tracker.isSaving}
-          onClose={() => setDeletingTask(null)}
-          onConfirm={() => tracker.deleteTask(deletingTask.id)}
+          errorMessage={tracker.actionError}
+          onClose={closeDeleteDialog}
+          onConfirm={deleteTask}
         />
       )}
-      {tracker.actionError && (
-        <Toast message={tracker.actionError} onDismiss={tracker.clearActionError} />
+      {tracker.actionError && !dialogOpen && !deletingTask && (
+        <Toast tone="error" message={tracker.actionError} onDismiss={tracker.clearActionError} />
+      )}
+      {!tracker.actionError && successMessage && (
+        <Toast
+          tone="success"
+          message={successMessage}
+          onDismiss={clearSuccessMessage}
+          durationMs={2800}
+        />
       )}
     </>
   );
