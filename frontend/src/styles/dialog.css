@@ -66,6 +66,20 @@
   padding: 0 13px;
 }
 
+.task-dialog .read-only-field {
+  min-height: 48px;
+  margin-bottom: 0;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  color: var(--ink-soft);
+  background: #f2f1ed;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
 .task-dialog textarea {
   padding: 13px;
   line-height: 1.5;

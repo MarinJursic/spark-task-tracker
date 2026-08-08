@@ -65,7 +65,7 @@ export function TaskFormDialog({
       title: form.title.trim(),
       description: form.description.trim(),
       assignee_id: Number(form.assigneeId),
-      status: form.status,
+      status: task ? form.status : EMPTY_FORM.status,
       priority: form.priority,
       due_date: form.dueDate || null,
     });
@@ -137,22 +137,26 @@ export function TaskFormDialog({
             </select>
           </label>
 
-          <label htmlFor="task-status">
-            <span>Status</span>
-            <select
-              id="task-status"
-              disabled={isSaving}
-              value={form.status}
-              onChange={(event) =>
-                setForm({ ...form, status: event.target.value as TaskStatus })
-              }
-            >
-              {TASK_STATUSES.map((status) => (
-                <option key={status.value} value={status.value}>
-                  {status.label}
-                </option>
-              ))}
-            </select>
+          <label htmlFor={task ? "task-status" : undefined}>
+            <span>{task ? "Status" : "Starting column"}</span>
+            {task ? (
+              <select
+                id="task-status"
+                disabled={isSaving}
+                value={form.status}
+                onChange={(event) =>
+                  setForm({ ...form, status: event.target.value as TaskStatus })
+                }
+              >
+                {TASK_STATUSES.map((status) => (
+                  <option key={status.value} value={status.value}>
+                    {status.label}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <span className="read-only-field">To do</span>
+            )}
           </label>
         </div>
 

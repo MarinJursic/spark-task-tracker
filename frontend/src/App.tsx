@@ -74,7 +74,7 @@ export default function App() {
       : await tracker.addTask(input);
 
     if (succeeded) {
-      setSuccessMessage(wasEditing ? "Task updated." : "Task created.");
+      setSuccessMessage(wasEditing ? "Task updated." : "Task created in To do.");
     }
 
     return succeeded;

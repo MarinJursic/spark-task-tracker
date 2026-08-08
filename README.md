@@ -18,7 +18,7 @@ clarity, maintainable boundaries, accessibility, and deliberate scope.
 
 | Challenge requirement | Implementation |
 | --- | --- |
-| Add a task | Accessible modal form with title, description, owner, status, priority, and optional due date. |
+| Add a task | Accessible modal form with title, description, owner, priority, and optional due date; new work starts in `To do`. |
 | Edit a task | The same form is reused with existing values populated. |
 | Assign a task | Tasks reference one of four seeded team members. Reassignment is supported. |
 | Mark complete | Moving a task to `Done` marks it complete; moving it back marks it incomplete. |
@@ -41,7 +41,7 @@ The primary workflow is intentionally contained in one page:
 
 1. The app loads tasks and assignable team members in parallel.
 2. A user creates a task with a clear title, supporting description, and owner.
-3. The created task is returned by the API and placed in the selected workflow column.
+3. New tasks enter `To do`; the canonical task returned by the API is placed in that column.
 4. Editing reuses the same form and can update wording, ownership, status, priority, or due date.
 5. Desktop users can drag cards between columns; the status menu provides the same `PATCH` workflow for keyboard and mobile use.
 6. Moving work to `Done` marks it complete; returning it to another column marks it incomplete.
@@ -351,7 +351,7 @@ make check
 | Django deployment check | Verifies secure production configuration with an explicit secret. |
 | Negative production-secret check | Proves production startup fails when the secret is missing. |
 | ESLint | React/TypeScript correctness and maintainability rules. |
-| 6 Vitest interaction tests | Board drag/drop, card actions, status movement, filters, due date/priority submission, input normalization, and notifications. |
+| 7 Vitest interaction tests | Deterministic task creation, board drag/drop, card actions, status movement, filters, input normalization, and notifications. |
 | Strict TypeScript and Vite build | Type integrity and production bundling. |
 
 The same backend and frontend checks run independently in GitHub Actions on every pull request
