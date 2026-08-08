@@ -9,7 +9,10 @@ const task: Task = {
   title: "Review lesson notes",
   description: "Check the new material before the tutoring session.",
   assignee: { id: 1, name: "Amelia Hart", role: "Student Success Lead", initials: "AH" },
+  status: "in_progress",
   completed: false,
+  priority: "high",
+  due_date: "2026-08-20",
   created_at: "2026-08-07T08:00:00Z",
   updated_at: "2026-08-07T08:00:00Z",
 };
@@ -18,6 +21,7 @@ describe("TaskCard", () => {
   it("shows task details and exposes the required actions", () => {
     const onEdit = vi.fn();
     const onToggle = vi.fn();
+    const onStatusChange = vi.fn();
     const onDelete = vi.fn();
     render(
       <TaskCard
@@ -25,20 +29,26 @@ describe("TaskCard", () => {
         isSaving={false}
         onEdit={onEdit}
         onToggle={onToggle}
+        onStatusChange={onStatusChange}
         onDelete={onDelete}
       />,
     );
 
     expect(screen.getByRole("heading", { name: task.title })).toBeInTheDocument();
-    expect(screen.getByText("In progress")).toBeInTheDocument();
+    expect(screen.getAllByText("In progress")).toHaveLength(2);
+    expect(screen.getByText("high")).toBeInTheDocument();
     expect(screen.getByText(task.assignee.name)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: `Edit ${task.title}` }));
     fireEvent.click(screen.getByRole("button", { name: `Mark ${task.title} as complete` }));
     fireEvent.click(screen.getByRole("button", { name: `Delete ${task.title}` }));
+    fireEvent.change(screen.getByRole("combobox", { name: `Status for ${task.title}` }), {
+      target: { value: "done" },
+    });
 
     expect(onEdit).toHaveBeenCalledWith(task);
     expect(onToggle).toHaveBeenCalledWith(task);
     expect(onDelete).toHaveBeenCalledWith(task);
+    expect(onStatusChange).toHaveBeenCalledWith(task, "done");
   });
 });

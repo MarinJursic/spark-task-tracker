@@ -15,11 +15,12 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: var(--paper);
   color: var(--ink-soft);
+  background: var(--paper);
 }
 
-.search-field:focus-within {
+.search-field:focus-within,
+.priority-filter:focus-within {
   border-color: var(--orange-dark);
   box-shadow: 0 0 0 3px rgb(255 122 0 / 13%);
 }
@@ -32,45 +33,55 @@
   background: transparent;
 }
 
-.status-filters {
-  padding: 4px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
+.filter-actions { display: flex; align-items: center; gap: 9px; }
+
+.priority-filter {
+  min-height: 46px;
+  padding: 4px 10px 4px 13px;
+  border: 1px solid var(--line-dark);
+  border-radius: var(--radius-sm);
   display: flex;
-  gap: 3px;
-  background: #ecebe7;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink-soft);
+  background: var(--paper);
+  font-size: 0.74rem;
+  font-weight: 700;
 }
 
-.status-filters button {
-  min-height: 38px;
-  padding: 0 14px;
+.priority-filter select {
   border: 0;
-  border-radius: 8px;
+  outline: 0;
+  color: var(--ink);
   background: transparent;
+  font-weight: 700;
+}
+
+.mine-filter {
+  min-height: 46px;
+  padding: 0 15px;
+  border: 1px solid var(--line-dark);
+  border-radius: var(--radius-sm);
   color: var(--ink-soft);
-  font-size: 0.82rem;
-  font-weight: 720;
+  background: var(--paper);
+  font-size: 0.8rem;
+  font-weight: 750;
   cursor: pointer;
 }
 
-.status-filters button.active {
-  color: var(--ink);
-  background: var(--paper);
-  box-shadow: 0 2px 7px rgb(28 29 31 / 8%);
+.mine-filter.active {
+  border-color: var(--orange);
+  color: var(--orange-dark);
+  background: var(--orange-pale);
 }
 
 @media (max-width: 760px) {
-  .filter-bar {
-    align-items: stretch;
-    flex-direction: column;
-  }
+  .filter-bar { align-items: stretch; flex-direction: column; }
+  .search-field { width: 100%; }
+  .filter-actions { display: grid; grid-template-columns: 1fr 1fr; }
+  .priority-filter, .mine-filter { width: 100%; }
+}
 
-  .search-field {
-    width: 100%;
-  }
-
-  .status-filters {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-  }
+@media (max-width: 390px) {
+  .filter-actions { grid-template-columns: 1fr; }
 }

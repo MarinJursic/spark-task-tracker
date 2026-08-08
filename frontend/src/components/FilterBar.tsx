@@ -1,21 +1,24 @@
 import { Search } from "lucide-react";
 
-import type { TaskStatus } from "../types";
+import type { PriorityFilter } from "../types";
 
 interface FilterBarProps {
   query: string;
-  status: TaskStatus;
+  priority: PriorityFilter;
+  mineOnly: boolean;
   onQueryChange: (query: string) => void;
-  onStatusChange: (status: TaskStatus) => void;
+  onPriorityChange: (priority: PriorityFilter) => void;
+  onMineOnlyChange: (mineOnly: boolean) => void;
 }
 
-const filters: { label: string; value: TaskStatus }[] = [
-  { label: "All tasks", value: "all" },
-  { label: "Open", value: "open" },
-  { label: "Completed", value: "completed" },
-];
-
-export function FilterBar({ query, status, onQueryChange, onStatusChange }: FilterBarProps) {
+export function FilterBar({
+  query,
+  priority,
+  mineOnly,
+  onQueryChange,
+  onPriorityChange,
+  onMineOnlyChange,
+}: FilterBarProps) {
   return (
     <section className="filter-bar" aria-label="Task filters">
       <label className="search-field">
@@ -29,18 +32,27 @@ export function FilterBar({ query, status, onQueryChange, onStatusChange }: Filt
           onChange={(event) => onQueryChange(event.target.value)}
         />
       </label>
-      <div className="status-filters" role="group" aria-label="Filter by completion status">
-        {filters.map((filter) => (
-          <button
-            className={status === filter.value ? "active" : undefined}
-            key={filter.value}
-            type="button"
-            aria-pressed={status === filter.value}
-            onClick={() => onStatusChange(filter.value)}
+      <div className="filter-actions">
+        <label className="priority-filter">
+          <span>Priority</span>
+          <select
+            value={priority}
+            onChange={(event) => onPriorityChange(event.target.value as PriorityFilter)}
           >
-            {filter.label}
-          </button>
-        ))}
+            <option value="all">All priorities</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </label>
+        <button
+          className={`mine-filter${mineOnly ? " active" : ""}`}
+          type="button"
+          aria-pressed={mineOnly}
+          onClick={() => onMineOnlyChange(!mineOnly)}
+        >
+          My tasks
+        </button>
       </div>
     </section>
   );

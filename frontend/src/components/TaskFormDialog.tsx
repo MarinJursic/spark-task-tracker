@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 
-import type { Task, TaskInput, TeamMember } from "../types";
+import { TASK_STATUSES } from "../types";
+import type { Task, TaskInput, TaskPriority, TaskStatus, TeamMember } from "../types";
 import { DialogError } from "./DialogError";
 
 interface TaskFormDialogProps {
@@ -9,17 +10,26 @@ interface TaskFormDialogProps {
   members: TeamMember[];
   isSaving: boolean;
   errorMessage: string | null;
+  defaultAssigneeId: number | null;
   onClose: () => void;
   onSubmit: (input: TaskInput) => Promise<boolean>;
 }
 
-const EMPTY_FORM = { title: "", description: "", assigneeId: "" };
+const EMPTY_FORM = {
+  title: "",
+  description: "",
+  assigneeId: "",
+  status: "todo" as TaskStatus,
+  priority: "medium" as TaskPriority,
+  dueDate: "",
+};
 
 export function TaskFormDialog({
   task,
   members,
   isSaving,
   errorMessage,
+  defaultAssigneeId,
   onClose,
   onSubmit,
 }: TaskFormDialogProps) {
@@ -33,7 +43,10 @@ export function TaskFormDialog({
     ...EMPTY_FORM,
     title: task?.title ?? "",
     description: task?.description ?? "",
-    assigneeId: String(task?.assignee.id ?? members[0]?.id ?? ""),
+    assigneeId: String(task?.assignee.id ?? defaultAssigneeId ?? members[0]?.id ?? ""),
+    status: task?.status ?? EMPTY_FORM.status,
+    priority: task?.priority ?? EMPTY_FORM.priority,
+    dueDate: task?.due_date ?? "",
   }));
 
   useEffect(() => {
@@ -52,6 +65,9 @@ export function TaskFormDialog({
       title: form.title.trim(),
       description: form.description.trim(),
       assignee_id: Number(form.assigneeId),
+      status: form.status,
+      priority: form.priority,
+      due_date: form.dueDate || null,
     });
     if (succeeded) onClose();
   };
@@ -103,22 +119,71 @@ export function TaskFormDialog({
           <small id={descriptionCountId}>{form.description.length}/1000</small>
         </label>
 
-        <label htmlFor="task-assignee">
-          <span>Assign to</span>
-          <select
-            id="task-assignee"
-            required
-            disabled={isSaving}
-            value={form.assigneeId}
-            onChange={(event) => setForm({ ...form, assigneeId: event.target.value })}
-          >
-            {members.map((member) => (
-              <option key={member.id} value={member.id}>
-                {member.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="form-grid two-columns">
+          <label htmlFor="task-assignee">
+            <span>Assign to</span>
+            <select
+              id="task-assignee"
+              required
+              disabled={isSaving}
+              value={form.assigneeId}
+              onChange={(event) => setForm({ ...form, assigneeId: event.target.value })}
+            >
+              {members.map((member) => (
+                <option key={member.id} value={member.id}>
+                  {member.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label htmlFor="task-status">
+            <span>Status</span>
+            <select
+              id="task-status"
+              disabled={isSaving}
+              value={form.status}
+              onChange={(event) =>
+                setForm({ ...form, status: event.target.value as TaskStatus })
+              }
+            >
+              {TASK_STATUSES.map((status) => (
+                <option key={status.value} value={status.value}>
+                  {status.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <div className="form-grid two-columns">
+          <label htmlFor="task-priority">
+            <span>Priority</span>
+            <select
+              id="task-priority"
+              disabled={isSaving}
+              value={form.priority}
+              onChange={(event) =>
+                setForm({ ...form, priority: event.target.value as TaskPriority })
+              }
+            >
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </label>
+
+          <label htmlFor="task-due-date">
+            <span>Due date</span>
+            <input
+              id="task-due-date"
+              type="date"
+              disabled={isSaving}
+              value={form.dueDate}
+              onChange={(event) => setForm({ ...form, dueDate: event.target.value })}
+            />
+          </label>
+        </div>
 
         <DialogError message={errorMessage} />
 

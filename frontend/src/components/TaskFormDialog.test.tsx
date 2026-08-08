@@ -22,6 +22,7 @@ describe("TaskFormDialog", () => {
       <TaskFormDialog
         task={null}
         members={[member]}
+        defaultAssigneeId={member.id}
         isSaving={false}
         errorMessage="Task could not be saved."
         onClose={onClose}
@@ -37,6 +38,15 @@ describe("TaskFormDialog", () => {
     fireEvent.change(screen.getByRole("textbox", { name: "Description" }), {
       target: { value: "  Check the new material.  " },
     });
+    fireEvent.change(screen.getByRole("combobox", { name: "Status" }), {
+      target: { value: "in_progress" },
+    });
+    fireEvent.change(screen.getByRole("combobox", { name: "Priority" }), {
+      target: { value: "high" },
+    });
+    fireEvent.change(screen.getByLabelText("Due date"), {
+      target: { value: "2026-08-18" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "Add task" }));
 
     await waitFor(() =>
@@ -44,6 +54,9 @@ describe("TaskFormDialog", () => {
         title: "Review notes",
         description: "Check the new material.",
         assignee_id: member.id,
+        status: "in_progress",
+        priority: "high",
+        due_date: "2026-08-18",
       }),
     );
     expect(onClose).toHaveBeenCalledOnce();

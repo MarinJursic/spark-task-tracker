@@ -1,11 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { createTask, deleteTask, fetchTasks, fetchTeamMembers, updateTask } from "../services/api";
-import type { Task, TaskInput, TeamMember } from "../types";
+import type { Task, TaskInput, TaskStatus, TeamMember } from "../types";
+
+const statusOrder: Record<TaskStatus, number> = { todo: 0, in_progress: 1, done: 2 };
 
 function sortTasks(tasks: Task[]): Task[] {
   return [...tasks].sort((left, right) => {
-    if (left.completed !== right.completed) return Number(left.completed) - Number(right.completed);
+    if (left.status !== right.status) return statusOrder[left.status] - statusOrder[right.status];
+    if (left.due_date && right.due_date) return left.due_date.localeCompare(right.due_date);
+    if (left.due_date) return -1;
+    if (right.due_date) return 1;
     return Date.parse(right.updated_at) - Date.parse(left.updated_at);
   });
 }
@@ -102,7 +107,9 @@ export function useTaskTracker() {
     addTask: (input: TaskInput) => runMutation(() => createTask(input)),
     editTask: (id: string, input: TaskInput) => runMutation(() => updateTask(id, input)),
     toggleTask: (task: Task) =>
-      runMutation(() => updateTask(task.id, { completed: !task.completed })),
+      runMutation(() => updateTask(task.id, { status: task.completed ? "todo" : "done" })),
+    moveTask: (task: Task, status: TaskStatus) =>
+      runMutation(() => updateTask(task.id, { status })),
     deleteTask: removeTask,
   };
 }

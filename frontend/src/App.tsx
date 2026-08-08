@@ -8,13 +8,17 @@ import { StatsBar } from "./components/StatsBar";
 import { TaskFormDialog } from "./components/TaskFormDialog";
 import { TaskList } from "./components/TaskList";
 import { Toast } from "./components/Toast";
+import { useSessionMember } from "./hooks/useSessionMember";
 import { useTaskTracker } from "./hooks/useTaskTracker";
-import type { Task, TaskInput, TaskStatus } from "./types";
+import { TASK_STATUSES } from "./types";
+import type { PriorityFilter, Task, TaskInput, TaskStatus } from "./types";
 
 export default function App() {
   const tracker = useTaskTracker();
+  const session = useSessionMember(tracker.members);
   const [query, setQuery] = useState("");
-  const [status, setStatus] = useState<TaskStatus>("all");
+  const [priority, setPriority] = useState<PriorityFilter>("all");
+  const [mineOnly, setMineOnly] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [deletingTask, setDeletingTask] = useState<Task | null>(null);
@@ -24,13 +28,13 @@ export default function App() {
   const filteredTasks = useMemo(() => {
     const search = query.trim().toLowerCase();
     return tracker.tasks.filter((task) => {
-      const matchesStatus =
-        status === "all" || (status === "completed" ? task.completed : !task.completed);
       const matchesSearch =
         !search || `${task.title} ${task.description}`.toLowerCase().includes(search);
-      return matchesStatus && matchesSearch;
+      const matchesPriority = priority === "all" || task.priority === priority;
+      const matchesMember = !mineOnly || task.assignee.id === session.activeMemberId;
+      return matchesSearch && matchesPriority && matchesMember;
     });
-  }, [query, status, tracker.tasks]);
+  }, [mineOnly, priority, query, session.activeMemberId, tracker.tasks]);
 
   const openCreateDialog = () => {
     tracker.clearActionError();
@@ -85,6 +89,17 @@ export default function App() {
     }
   };
 
+  const moveTask = async (task: Task, status: TaskStatus) => {
+    if (status === task.status) return;
+
+    clearSuccessMessage();
+    const succeeded = await tracker.moveTask(task, status);
+    if (succeeded) {
+      const label = TASK_STATUSES.find((option) => option.value === status)?.label ?? status;
+      setSuccessMessage(`Task moved to ${label}.`);
+    }
+  };
+
   const deleteTask = async () => {
     if (!deletingTask) return false;
 
@@ -97,11 +112,17 @@ export default function App() {
     return succeeded;
   };
 
-  const completedCount = tracker.tasks.filter((task) => task.completed).length;
+  const todoCount = tracker.tasks.filter((task) => task.status === "todo").length;
+  const inProgressCount = tracker.tasks.filter((task) => task.status === "in_progress").length;
+  const doneCount = tracker.tasks.filter((task) => task.status === "done").length;
 
   return (
     <>
-      <AppHeader />
+      <AppHeader
+        members={tracker.members}
+        activeMemberId={session.activeMemberId}
+        onMemberChange={session.selectMember}
+      />
       <main id="main-content" className="page-shell">
         <section className="page-intro">
           <div>
@@ -109,7 +130,7 @@ export default function App() {
             <h1>
               Keep every task <em>moving.</em>
             </h1>
-            <p>Add, assign, update, and complete work from one focused view.</p>
+            <p>Plan, assign, and deliver team work from one focused board.</p>
           </div>
           <button
             className="button primary"
@@ -122,12 +143,14 @@ export default function App() {
           </button>
         </section>
 
-        <StatsBar total={tracker.tasks.length} completed={completedCount} />
+        <StatsBar todo={todoCount} inProgress={inProgressCount} done={doneCount} />
         <FilterBar
           query={query}
-          status={status}
+          priority={priority}
+          mineOnly={mineOnly}
           onQueryChange={setQuery}
-          onStatusChange={setStatus}
+          onPriorityChange={setPriority}
+          onMineOnlyChange={setMineOnly}
         />
 
         {tracker.isLoading ? (
@@ -147,10 +170,11 @@ export default function App() {
         ) : (
           <TaskList
             tasks={filteredTasks}
-            hasFilters={Boolean(query.trim()) || status !== "all"}
+            hasFilters={Boolean(query.trim()) || priority !== "all" || mineOnly}
             isSaving={tracker.isSaving}
             onEdit={openEditDialog}
             onToggle={(task) => void toggleTask(task)}
+            onStatusChange={(task, status) => void moveTask(task, status)}
             onDelete={openDeleteDialog}
           />
         )}
@@ -160,6 +184,7 @@ export default function App() {
         <TaskFormDialog
           task={editingTask}
           members={tracker.members}
+          defaultAssigneeId={session.activeMemberId}
           isSaving={tracker.isSaving}
           errorMessage={tracker.actionError}
           onClose={closeTaskDialog}

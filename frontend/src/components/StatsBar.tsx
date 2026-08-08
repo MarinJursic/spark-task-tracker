@@ -1,18 +1,20 @@
 interface StatsBarProps {
-  total: number;
-  completed: number;
+  todo: number;
+  inProgress: number;
+  done: number;
 }
 
-export function StatsBar({ total, completed }: StatsBarProps) {
-  const open = total - completed;
-  const progress = total === 0 ? 0 : Math.round((completed / total) * 100);
+export function StatsBar({ todo, inProgress, done }: StatsBarProps) {
+  const total = todo + inProgress + done;
+  const progress = total === 0 ? 0 : Math.round((done / total) * 100);
 
   return (
     <section className="stats-bar" aria-label="Task progress">
       <div>
         <span className="eyebrow">Today’s overview</span>
         <p aria-live="polite">
-          <strong>{open}</strong> open · <strong>{completed}</strong> completed
+          <strong>{todo}</strong> to do · <strong>{inProgress}</strong> in progress ·{" "}
+          <strong>{done}</strong> done
         </p>
       </div>
       <div className="progress-group">

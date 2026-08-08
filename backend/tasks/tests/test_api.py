@@ -18,7 +18,8 @@ class TaskApiTests(APITestCase):
             title="Document the API",
             description="Record the endpoint contract.",
             assignee=cls.member,
-            completed=True,
+            status=Task.Status.DONE,
+            priority=Task.Priority.HIGH,
         )
 
     def test_list_exposes_required_task_fields(self) -> None:
@@ -28,6 +29,9 @@ class TaskApiTests(APITestCase):
         task = next(item for item in response.data if item["id"] == str(self.open_task.id))
         self.assertEqual(task["title"], self.open_task.title)
         self.assertFalse(task["completed"])
+        self.assertEqual(task["status"], Task.Status.TODO)
+        self.assertEqual(task["priority"], Task.Priority.MEDIUM)
+        self.assertIsNone(task["due_date"])
         self.assertEqual(task["assignee"]["name"], self.member.name)
 
     def test_create_task(self) -> None:
@@ -35,7 +39,9 @@ class TaskApiTests(APITestCase):
             "title": "  Add a task  ",
             "description": "  Persist a new team task.  ",
             "assignee_id": self.member.id,
-            "completed": False,
+            "status": Task.Status.IN_PROGRESS,
+            "priority": Task.Priority.HIGH,
+            "due_date": "2026-08-20",
         }
 
         response = self.client.post(reverse("task-list"), payload, format="json")
@@ -44,6 +50,9 @@ class TaskApiTests(APITestCase):
         created = Task.objects.get(id=response.data["id"])
         self.assertEqual(created.title, "Add a task")
         self.assertEqual(created.description, "Persist a new team task.")
+        self.assertEqual(created.status, Task.Status.IN_PROGRESS)
+        self.assertEqual(created.priority, Task.Priority.HIGH)
+        self.assertEqual(str(created.due_date), "2026-08-20")
 
     def test_create_requires_title_description_and_assignee(self) -> None:
         response = self.client.post(reverse("task-list"), {}, format="json")
@@ -98,12 +107,37 @@ class TaskApiTests(APITestCase):
         self.assertFalse(incomplete_response.data["completed"])
         self.assertFalse(self.open_task.completed)
 
+    def test_move_task_through_workflow(self) -> None:
+        url = reverse("task-detail", kwargs={"pk": self.open_task.id})
+
+        response = self.client.patch(
+            url,
+            {"status": Task.Status.IN_PROGRESS, "priority": Task.Priority.LOW},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["status"], Task.Status.IN_PROGRESS)
+        self.assertFalse(response.data["completed"])
+        self.assertEqual(response.data["priority"], Task.Priority.LOW)
+
     def test_filter_by_status(self) -> None:
         response = self.client.get(reverse("task-list"), {"status": "completed"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue(response.data)
         self.assertTrue(all(task["completed"] for task in response.data))
+
+        workflow_response = self.client.get(reverse("task-list"), {"status": "done"})
+        self.assertEqual(workflow_response.status_code, status.HTTP_200_OK)
+        self.assertTrue(all(task["status"] == "done" for task in workflow_response.data))
+
+    def test_filter_by_priority(self) -> None:
+        response = self.client.get(reverse("task-list"), {"priority": "high"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn(str(self.completed_task.id), [task["id"] for task in response.data])
+        self.assertTrue(all(task["priority"] == "high" for task in response.data))
 
     def test_search_matches_title_or_description(self) -> None:
         response = self.client.get(reverse("task-list"), {"q": "endpoint contract"})
@@ -121,6 +155,10 @@ class TaskApiTests(APITestCase):
 
         self.assertEqual(oversized_search_response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("q", oversized_search_response.data)
+
+        invalid_priority_response = self.client.get(reverse("task-list"), {"priority": "urgent"})
+        self.assertEqual(invalid_priority_response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("priority", invalid_priority_response.data)
 
     def test_delete_task(self) -> None:
         url = reverse("task-detail", kwargs={"pk": self.open_task.id})

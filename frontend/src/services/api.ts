@@ -1,4 +1,4 @@
-import type { Task, TaskInput, TeamMember } from "../types";
+import type { Task, TaskInput, TaskStatus, TeamMember } from "../types";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api";
 
@@ -47,11 +47,14 @@ export function fetchTeamMembers(signal?: AbortSignal): Promise<TeamMember[]> {
 export function createTask(input: TaskInput): Promise<Task> {
   return request<Task>("/tasks/", {
     method: "POST",
-    body: JSON.stringify({ ...input, completed: false }),
+    body: JSON.stringify(input),
   });
 }
 
-export function updateTask(id: string, input: Partial<TaskInput & Pick<Task, "completed">>) {
+export function updateTask(
+  id: string,
+  input: Partial<TaskInput & Pick<Task, "completed"> & { status: TaskStatus }>,
+) {
   return request<Task>(`/tasks/${id}/`, {
     method: "PATCH",
     body: JSON.stringify(input),

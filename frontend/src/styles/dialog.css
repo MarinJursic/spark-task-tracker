@@ -87,6 +87,15 @@
   font-size: 0.69rem;
 }
 
+.form-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.form-grid.two-columns {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .dialog-actions {
   margin-top: 30px;
   padding-top: 22px;
@@ -204,6 +213,11 @@
   .dialog-actions {
     display: grid;
     grid-template-columns: 1fr 1fr;
+  }
+
+  .form-grid.two-columns {
+    grid-template-columns: 1fr;
+    gap: 0;
   }
 }
 

@@ -20,3 +20,7 @@ class TaskModelTests(TestCase):
         )
 
         self.assertEqual(str(task), "Verify task flow")
+        self.assertFalse(task.completed)
+
+        task.status = Task.Status.DONE
+        self.assertTrue(task.completed)

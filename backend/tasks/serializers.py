@@ -12,6 +12,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    completed = serializers.BooleanField(required=False)
     assignee = TeamMemberSerializer(read_only=True)
     assignee_id = serializers.PrimaryKeyRelatedField(
         queryset=TeamMember.objects.all(),
@@ -27,7 +28,10 @@ class TaskSerializer(serializers.ModelSerializer):
             "description",
             "assignee",
             "assignee_id",
+            "status",
             "completed",
+            "priority",
+            "due_date",
             "created_at",
             "updated_at",
         )
@@ -38,3 +42,20 @@ class TaskSerializer(serializers.ModelSerializer):
 
     def validate_description(self, value: str) -> str:
         return value.strip()
+
+    def validate(self, attrs: dict) -> dict:
+        completed = attrs.pop("completed", None)
+        selected_status = attrs.get("status")
+
+        if completed is not None:
+            compatible_statuses = (
+                {Task.Status.DONE} if completed else {Task.Status.TODO, Task.Status.IN_PROGRESS}
+            )
+            if selected_status and selected_status not in compatible_statuses:
+                raise serializers.ValidationError(
+                    {"completed": "Completed must agree with the selected workflow status."}
+                )
+            if not selected_status:
+                attrs["status"] = Task.Status.DONE if completed else Task.Status.TODO
+
+        return attrs

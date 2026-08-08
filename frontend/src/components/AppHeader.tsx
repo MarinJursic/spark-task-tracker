@@ -1,4 +1,14 @@
-export function AppHeader() {
+import { UserRound } from "lucide-react";
+
+import type { TeamMember } from "../types";
+
+interface AppHeaderProps {
+  members: TeamMember[];
+  activeMemberId: number | null;
+  onMemberChange: (memberId: number) => void;
+}
+
+export function AppHeader({ members, activeMemberId, onMemberChange }: AppHeaderProps) {
   return (
     <header className="app-header">
       <div className="header-inner">
@@ -11,7 +21,22 @@ export function AppHeader() {
             <small>TUTORING · TEAM TASKS</small>
           </span>
         </div>
-        <span className="header-note">Focused work. Clear ownership.</span>
+        <label className="session-user">
+          <UserRound size={17} aria-hidden="true" />
+          <span>Working as</span>
+          <select
+            aria-label="Active session user"
+            disabled={members.length === 0}
+            value={activeMemberId ?? ""}
+            onChange={(event) => onMemberChange(Number(event.target.value))}
+          >
+            {members.map((member) => (
+              <option key={member.id} value={member.id}>
+                {member.name}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
     </header>
   );

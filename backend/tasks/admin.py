@@ -11,6 +11,6 @@ class TeamMemberAdmin(admin.ModelAdmin):
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ("title", "assignee", "completed", "updated_at")
-    list_filter = ("completed", "assignee")
+    list_display = ("title", "status", "priority", "due_date", "assignee", "updated_at")
+    list_filter = ("status", "priority", "assignee")
     search_fields = ("title", "description")
