@@ -106,7 +106,7 @@ sequenceDiagram
   participant DRF as Django REST API
   participant DB as Database
 
-  UI->>Hook: add/edit/move/toggle/delete action
+  UI->>Hook: add/edit/move/delete action
   Hook->>API: typed input
   API->>DRF: POST, PATCH, or DELETE
   DRF->>DRF: validate and normalize
@@ -241,7 +241,7 @@ focused page.
 - The mount request uses `AbortController` so an unmounted component is not updated.
 - Loading errors can be retried without refreshing the page.
 - Mutation errors do not replace already-loaded content.
-- Compact success notifications confirm create, update, column moves, complete/reopen, and delete outcomes.
+- Compact success notifications confirm creation, updates, column moves, and deletion.
 - Inputs and actions are disabled during a save to prevent duplicate submissions.
 - Successful create/update mutations replace the canonical task returned by the server and
   reapply ordering; successful deletion removes only the matching task.
@@ -258,7 +258,8 @@ The interface was reviewed against relevant WCAG 2.2 behaviours:
 - semantic `progressbar` state;
 - disabled and busy states during writes;
 - touch-sized controls and keyboard-operable actions;
-- no horizontal overflow at the 320px reflow boundary;
+- the page reflows without horizontal overflow at 320px, while the board uses a contained
+  horizontal scroller;
 - long task titles wrap without breaking the card layout.
 
 Desktop, 390px mobile, and the 320px reflow boundary were exercised manually. The final workflow
@@ -360,7 +361,7 @@ production dependency vulnerabilities reported.
 
 ### Manual browser acceptance checklist
 
-- create a task with status, priority, due date, and team member;
+- create a task with priority, due date, and team member, then verify it starts in `To do`;
 - edit its content, workflow details, and assignee;
 - drag it through all three columns, verify the status-menu fallback, then mark it complete and incomplete;
 - cancel deletion, then confirm deletion and verify the task is removed;
