@@ -175,6 +175,6 @@
   font-size: 0.72rem;
 }
 
-@media (max-width: 980px) {
+@media (max-width: 760px) {
   .task-description { min-height: 0; }
 }

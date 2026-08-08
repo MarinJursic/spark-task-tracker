@@ -258,8 +258,8 @@ The interface was reviewed against relevant WCAG 2.2 behaviours:
 - semantic `progressbar` state;
 - disabled and busy states during writes;
 - touch-sized controls and keyboard-operable actions;
-- the page reflows without horizontal overflow at 320px, while the board uses a contained
-  horizontal scroller;
+- the page reflows without horizontal overflow at 320px; narrow screens use a contained,
+  scrollbar-free board scroller;
 - long task titles wrap without breaking the card layout.
 
 Desktop, 390px mobile, and the 320px reflow boundary were exercised manually. The final workflow

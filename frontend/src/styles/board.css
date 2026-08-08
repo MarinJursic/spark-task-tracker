@@ -87,15 +87,18 @@
   text-align: center;
 }
 
-@media (max-width: 980px) {
+@media (max-width: 760px) {
   .task-board-region {
     margin-inline: calc(var(--page-gutter) * -1);
     padding-inline: var(--page-gutter);
     overflow-x: auto;
     overscroll-behavior-inline: contain;
     scroll-snap-type: inline proximity;
-    scrollbar-gutter: stable;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
+
+  .task-board-region::-webkit-scrollbar { display: none; }
 
   .board-guidance {
     position: sticky;
