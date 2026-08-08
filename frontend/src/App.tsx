@@ -6,7 +6,7 @@ import { DeleteTaskDialog } from "./components/DeleteTaskDialog";
 import { FilterBar } from "./components/FilterBar";
 import { StatsBar } from "./components/StatsBar";
 import { TaskFormDialog } from "./components/TaskFormDialog";
-import { TaskList } from "./components/TaskList";
+import { TaskBoard } from "./components/TaskBoard";
 import { Toast } from "./components/Toast";
 import { useSessionMember } from "./hooks/useSessionMember";
 import { useTaskTracker } from "./hooks/useTaskTracker";
@@ -168,7 +168,7 @@ export default function App() {
             </button>
           </section>
         ) : (
-          <TaskList
+          <TaskBoard
             tasks={filteredTasks}
             hasFilters={Boolean(query.trim()) || priority !== "all" || mineOnly}
             isSaving={tracker.isSaving}

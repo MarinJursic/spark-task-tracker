@@ -1,0 +1,201 @@
+.task-card {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+  box-shadow: 0 3px 10px rgb(28 29 31 / 4%);
+  transition: box-shadow 160ms ease, transform 160ms ease;
+}
+
+.task-card.is-dragging {
+  opacity: 0.45;
+  box-shadow: none;
+  transform: scale(0.985);
+}
+
+.task-card:hover {
+  box-shadow: 0 9px 22px rgb(28 29 31 / 9%);
+  transform: translateY(-1px);
+}
+
+.task-heading,
+.task-heading-details,
+.task-actions,
+.task-metadata,
+.task-footer {
+  display: flex;
+  align-items: center;
+}
+
+.task-heading,
+.task-footer { justify-content: space-between; }
+.task-heading { gap: 12px; }
+.task-heading-details { gap: 5px; }
+.task-actions { gap: 5px; }
+
+.drag-handle {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  color: #898a87;
+  cursor: grab;
+  touch-action: none;
+}
+
+.drag-handle:hover {
+  color: var(--ink);
+  background: #f0efeb;
+}
+
+.drag-handle:active { cursor: grabbing; }
+
+.priority-label {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.priority-label.high { color: #a12d24; background: #fbe9e7; }
+.priority-label.medium { color: #96520a; background: #fff0df; }
+.priority-label.low { color: #386852; background: #eaf3ee; }
+
+.task-card h3 {
+  margin: 13px 0 0;
+  font-size: 1rem;
+  line-height: 1.3;
+  letter-spacing: -0.012em;
+  overflow-wrap: anywhere;
+}
+
+.task-card.done h3 {
+  color: #686b69;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.task-description {
+  min-height: 2.7em;
+  margin: 8px 0 14px;
+  color: var(--ink-soft);
+  font-size: 0.79rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.task-metadata {
+  min-height: 25px;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.status-label,
+.due-date {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 760;
+}
+
+.status-label {
+  padding: 5px 8px;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.status-label.todo { color: #5f6160; background: #eeeeeb; }
+.status-label.in_progress { color: #9a4a03; background: var(--orange-pale); }
+.status-label.done { color: var(--green); background: var(--green-pale); }
+
+.due-date { gap: 4px; color: var(--ink-soft); }
+.due-date.overdue { color: var(--red); }
+
+.task-footer {
+  gap: 10px;
+  margin-top: 17px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.assignee {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.avatar {
+  width: 31px;
+  height: 31px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-size: 0.64rem;
+  font-weight: 800;
+}
+
+.avatar-orange { background: #b55200; }
+.avatar-violet { background: #6c52a2; }
+.avatar-blue { background: #316b93; }
+.avatar-green { background: #35765e; }
+
+.assignee strong,
+.assignee small { display: block; }
+.assignee strong { font-size: 0.73rem; }
+.assignee small { margin-top: 2px; color: var(--ink-soft); font-size: 0.64rem; }
+
+.complete-control {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 2px solid #9b9d9b;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: transparent;
+  background: white;
+  cursor: pointer;
+}
+
+.complete-control[aria-pressed="true"] {
+  border-color: var(--green);
+  color: white;
+  background: var(--green);
+}
+
+.move-control {
+  margin-top: 13px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 9px;
+  color: var(--ink-soft);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.move-control select {
+  width: 100%;
+  min-width: 0;
+  height: 34px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: #fafaf8;
+  font-size: 0.72rem;
+}
+
+@media (max-width: 980px) {
+  .task-description { min-height: 0; }
+}

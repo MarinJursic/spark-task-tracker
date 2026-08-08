@@ -31,6 +31,9 @@ describe("TaskCard", () => {
         onToggle={onToggle}
         onStatusChange={onStatusChange}
         onDelete={onDelete}
+        onDragStart={vi.fn()}
+        onDragEnd={vi.fn()}
+        isDragging={false}
       />,
     );
 

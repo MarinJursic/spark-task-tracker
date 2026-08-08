@@ -6,6 +6,8 @@ import "./styles/tokens.css";
 import "./styles/base.css";
 import "./styles/shell.css";
 import "./styles/toolbar.css";
+import "./styles/board.css";
+import "./styles/task-card.css";
 import "./styles/tasks.css";
 import "./styles/dialog.css";
 

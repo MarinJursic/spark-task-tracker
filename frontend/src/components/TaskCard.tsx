@@ -1,4 +1,5 @@
-import { CalendarDays, Check, Pencil, Trash2 } from "lucide-react";
+import type { DragEvent } from "react";
+import { CalendarDays, Check, GripVertical, Pencil, Trash2 } from "lucide-react";
 
 import { TASK_STATUSES } from "../types";
 import type { Task, TaskStatus } from "../types";
@@ -9,7 +10,10 @@ interface TaskCardProps {
   onToggle: (task: Task) => void;
   onStatusChange: (task: Task, status: TaskStatus) => void;
   onDelete: (task: Task) => void;
+  onDragStart: (event: DragEvent<HTMLElement>, task: Task) => void;
+  onDragEnd: () => void;
   isSaving: boolean;
+  isDragging: boolean;
 }
 
 const avatarClasses = ["avatar-orange", "avatar-violet", "avatar-blue", "avatar-green"];
@@ -26,7 +30,10 @@ export function TaskCard({
   onToggle,
   onStatusChange,
   onDelete,
+  onDragStart,
+  onDragEnd,
   isSaving,
+  isDragging,
 }: TaskCardProps) {
   const avatarClass = avatarClasses[task.assignee.id % avatarClasses.length];
   const isOverdue = Boolean(
@@ -35,9 +42,25 @@ export function TaskCard({
   const statusLabel = TASK_STATUSES.find((status) => status.value === task.status)?.label;
 
   return (
-    <article className={`task-card ${task.status}`}>
+    <article className={`task-card ${task.status}${isDragging ? " is-dragging" : ""}`}>
       <div className="task-heading">
-        <span className={`priority-label ${task.priority}`}>{task.priority}</span>
+        <div className="task-heading-details">
+          <span
+            className="drag-handle"
+            draggable={!isSaving}
+            title="Drag to change status"
+            aria-hidden="true"
+            onDragStart={(event) => {
+              const card = event.currentTarget.closest("article");
+              if (card) event.dataTransfer.setDragImage(card, 24, 24);
+              onDragStart(event, task);
+            }}
+            onDragEnd={onDragEnd}
+          >
+            <GripVertical size={17} aria-hidden="true" />
+          </span>
+          <span className={`priority-label ${task.priority}`}>{task.priority}</span>
+        </div>
         <div className="task-actions">
           <button
             className="icon-button compact"

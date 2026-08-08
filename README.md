@@ -22,7 +22,7 @@ clarity, maintainable boundaries, accessibility, and deliberate scope.
 | Edit a task | The same form is reused with existing values populated. |
 | Assign a task | Tasks reference one of four seeded team members. Reassignment is supported. |
 | Mark complete | A task can be toggled complete or incomplete; completion maps to the `done` workflow state. |
-| Jira-style workflow | Every task sits in `To do`, `In progress`, or `Done` and can move directly between columns. |
+| Jira-style workflow | Every task sits in a dedicated `To do`, `In progress`, or `Done` column and can be dragged between them. |
 | Additional focused enhancement: delete | A separately confirmed permanent action removes a task from the API and UI. |
 | Show title, status, and team member | Every task card exposes all three at a glance. |
 | Persist changes | All writes pass through the Django REST API and Django ORM. |
@@ -43,7 +43,7 @@ The primary workflow is intentionally contained in one page:
 2. A user creates a task with a clear title, supporting description, and owner.
 3. The created task is returned by the API and placed in the selected workflow column.
 4. Editing reuses the same form and can update wording, ownership, status, priority, or due date.
-5. A compact status control moves work between `To do`, `In progress`, and `Done` using `PATCH`.
+5. Desktop users can drag cards between columns; the status menu provides the same `PATCH` workflow for keyboard and mobile use.
 6. The complete control is a convenience action that moves work to `Done`; reopening moves it to `To do`.
 7. Deletion requires a separate confirmation and removes the task only after the API succeeds.
 8. A compact confirmation reports every successful create, update, move, completion, and deletion.
@@ -351,7 +351,7 @@ make check
 | Django deployment check | Verifies secure production configuration with an explicit secret. |
 | Negative production-secret check | Proves production startup fails when the secret is missing. |
 | ESLint | React/TypeScript correctness and maintainability rules. |
-| 5 Vitest interaction tests | Board-card actions, status movement, filters, due date/priority submission, input normalization, and notifications. |
+| 6 Vitest interaction tests | Board drag/drop, card actions, status movement, filters, due date/priority submission, input normalization, and notifications. |
 | Strict TypeScript and Vite build | Type integrity and production bundling. |
 
 The same backend and frontend checks run independently in GitHub Actions on every pull request
@@ -362,7 +362,7 @@ production dependency vulnerabilities reported.
 
 - create a task with status, priority, due date, and team member;
 - edit its content, workflow details, and assignee;
-- move it through all three columns, then mark it complete and incomplete;
+- drag it through all three columns, verify the status-menu fallback, then mark it complete and incomplete;
 - cancel deletion, then confirm deletion and verify the task is removed;
 - search by title and description;
 - filter by priority and the session user's tasks;
