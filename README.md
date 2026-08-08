@@ -12,7 +12,6 @@ clarity, maintainable boundaries, accessibility, and deliberate scope.
 2. Review the seven-slide PowerPoint in [`output/presentation/`](output/presentation/); the same product preview is embedded on slide 3.
 3. Run `make install`, `make migrate`, and then start the backend and frontend as described below.
 4. Run `make check` to execute the same quality gate used by GitHub Actions.
-5. Use the prepared [2:30 Loom narrative](docs/LOOM_SCRIPT.md) for the requested interview walkthrough.
 
 ## Requirements coverage
 
@@ -484,7 +483,6 @@ frontend/
     services/             Typed HTTP boundary and error translation
     styles/               Design tokens and responsibility-based CSS
 docs/
-  LOOM_SCRIPT.md          Ready-to-record 2:30 walkthrough
   assets/                 Verified captures and 32-second product preview
 output/presentation/      Seven-slide submission deck with embedded video
 .github/workflows/ci.yml  Independent backend and frontend quality jobs
@@ -498,7 +496,6 @@ Makefile                  Reviewer-friendly install, run, and check commands
 - [Desktop capture](docs/assets/task-tracker-desktop.png)
 - [Mobile capture](docs/assets/task-tracker-mobile.png)
 - [Mobile task dialog](docs/assets/task-dialog-mobile.png)
-- [Loom walkthrough script](docs/LOOM_SCRIPT.md)
 - [PowerPoint walkthrough](output/presentation/Spark-Task-Tracker-Walkthrough.pptx)
 
 For the final submission, record the required narrated Loom, add its share URL to the submission
