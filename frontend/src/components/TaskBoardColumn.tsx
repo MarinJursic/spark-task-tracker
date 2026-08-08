@@ -18,7 +18,6 @@ interface TaskBoardColumnProps {
   onDragOver: (event: DragEvent<HTMLElement>) => void;
   onDrop: (event: DragEvent<HTMLElement>) => void;
   onEdit: (task: Task) => void;
-  onToggle: (task: Task) => void;
   onStatusChange: (task: Task, status: TaskStatus) => void;
   onDelete: (task: Task) => void;
 }
@@ -42,7 +41,6 @@ export function TaskBoardColumn({
   onDragOver,
   onDrop,
   onEdit,
-  onToggle,
   onStatusChange,
   onDelete,
 }: TaskBoardColumnProps) {
@@ -76,7 +74,6 @@ export function TaskBoardColumn({
               onDragStart={onDragStart}
               onDragEnd={onDragEnd}
               onEdit={onEdit}
-              onToggle={onToggle}
               onStatusChange={onStatusChange}
               onDelete={onDelete}
             />

@@ -28,8 +28,7 @@
   align-items: center;
 }
 
-.task-heading,
-.task-footer { justify-content: space-between; }
+.task-heading { justify-content: space-between; }
 .task-heading { gap: 12px; }
 .task-heading-details { gap: 5px; }
 .task-actions { gap: 5px; }
@@ -152,26 +151,6 @@
 .assignee small { display: block; }
 .assignee strong { font-size: 0.73rem; }
 .assignee small { margin-top: 2px; color: var(--ink-soft); font-size: 0.64rem; }
-
-.complete-control {
-  width: 30px;
-  height: 30px;
-  flex: 0 0 auto;
-  padding: 0;
-  border: 2px solid #9b9d9b;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  color: transparent;
-  background: white;
-  cursor: pointer;
-}
-
-.complete-control[aria-pressed="true"] {
-  border-color: var(--green);
-  color: white;
-  background: var(--green);
-}
 
 .move-control {
   margin-top: 13px;

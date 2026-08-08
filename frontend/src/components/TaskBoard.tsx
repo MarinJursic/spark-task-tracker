@@ -10,7 +10,6 @@ interface TaskBoardProps {
   hasFilters: boolean;
   isSaving: boolean;
   onEdit: (task: Task) => void;
-  onToggle: (task: Task) => void;
   onStatusChange: (task: Task, status: TaskStatus) => void;
   onDelete: (task: Task) => void;
 }
@@ -33,7 +32,6 @@ export function TaskBoard({
   hasFilters,
   isSaving,
   onEdit,
-  onToggle,
   onStatusChange,
   onDelete,
 }: TaskBoardProps) {
@@ -94,7 +92,6 @@ export function TaskBoard({
             onDragOver={(event) => allowDrop(event, status)}
             onDrop={(event) => dropTask(event, status)}
             onEdit={onEdit}
-            onToggle={onToggle}
             onStatusChange={onStatusChange}
             onDelete={onDelete}
           />

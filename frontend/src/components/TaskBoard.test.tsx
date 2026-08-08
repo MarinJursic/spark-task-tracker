@@ -38,7 +38,6 @@ describe("TaskBoard", () => {
         hasFilters={false}
         isSaving={false}
         onEdit={vi.fn()}
-        onToggle={vi.fn()}
         onStatusChange={onStatusChange}
         onDelete={vi.fn()}
       />,

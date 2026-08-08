@@ -21,7 +21,7 @@ clarity, maintainable boundaries, accessibility, and deliberate scope.
 | Add a task | Accessible modal form with title, description, owner, status, priority, and optional due date. |
 | Edit a task | The same form is reused with existing values populated. |
 | Assign a task | Tasks reference one of four seeded team members. Reassignment is supported. |
-| Mark complete | A task can be toggled complete or incomplete; completion maps to the `done` workflow state. |
+| Mark complete | Moving a task to `Done` marks it complete; moving it back marks it incomplete. |
 | Jira-style workflow | Every task sits in a dedicated `To do`, `In progress`, or `Done` column and can be dragged between them. |
 | Additional focused enhancement: delete | A separately confirmed permanent action removes a task from the API and UI. |
 | Show title, status, and team member | Every task card exposes all three at a glance. |
@@ -44,7 +44,7 @@ The primary workflow is intentionally contained in one page:
 3. The created task is returned by the API and placed in the selected workflow column.
 4. Editing reuses the same form and can update wording, ownership, status, priority, or due date.
 5. Desktop users can drag cards between columns; the status menu provides the same `PATCH` workflow for keyboard and mobile use.
-6. The complete control is a convenience action that moves work to `Done`; reopening moves it to `To do`.
+6. Moving work to `Done` marks it complete; returning it to another column marks it incomplete.
 7. Deletion requires a separate confirmation and removes the task only after the API succeeds.
 8. A compact confirmation reports every successful create, update, move, completion, and deletion.
 9. Search, priority, and ownership filters update the board without losing canonical task state.

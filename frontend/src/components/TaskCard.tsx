@@ -1,5 +1,5 @@
 import type { DragEvent } from "react";
-import { CalendarDays, Check, GripVertical, Pencil, Trash2 } from "lucide-react";
+import { CalendarDays, GripVertical, Pencil, Trash2 } from "lucide-react";
 
 import { TASK_STATUSES } from "../types";
 import type { Task, TaskStatus } from "../types";
@@ -7,7 +7,6 @@ import type { Task, TaskStatus } from "../types";
 interface TaskCardProps {
   task: Task;
   onEdit: (task: Task) => void;
-  onToggle: (task: Task) => void;
   onStatusChange: (task: Task, status: TaskStatus) => void;
   onDelete: (task: Task) => void;
   onDragStart: (event: DragEvent<HTMLElement>, task: Task) => void;
@@ -27,7 +26,6 @@ function formatDueDate(dueDate: string): string {
 export function TaskCard({
   task,
   onEdit,
-  onToggle,
   onStatusChange,
   onDelete,
   onDragStart,
@@ -107,17 +105,6 @@ export function TaskCard({
             <small>{task.assignee.role}</small>
           </span>
         </div>
-
-        <button
-          className="complete-control"
-          type="button"
-          disabled={isSaving}
-          aria-label={`Mark ${task.title} as ${task.completed ? "incomplete" : "complete"}`}
-          aria-pressed={task.completed}
-          onClick={() => onToggle(task)}
-        >
-          <Check size={16} strokeWidth={3} aria-hidden="true" />
-        </button>
       </div>
 
       <label className="move-control">

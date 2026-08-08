@@ -80,15 +80,6 @@ export default function App() {
     return succeeded;
   };
 
-  const toggleTask = async (task: Task) => {
-    clearSuccessMessage();
-    const succeeded = await tracker.toggleTask(task);
-
-    if (succeeded) {
-      setSuccessMessage(task.completed ? "Task reopened." : "Task completed.");
-    }
-  };
-
   const moveTask = async (task: Task, status: TaskStatus) => {
     if (status === task.status) return;
 
@@ -173,7 +164,6 @@ export default function App() {
             hasFilters={Boolean(query.trim()) || priority !== "all" || mineOnly}
             isSaving={tracker.isSaving}
             onEdit={openEditDialog}
-            onToggle={(task) => void toggleTask(task)}
             onStatusChange={(task, status) => void moveTask(task, status)}
             onDelete={openDeleteDialog}
           />

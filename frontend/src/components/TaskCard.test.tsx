@@ -20,7 +20,6 @@ const task: Task = {
 describe("TaskCard", () => {
   it("shows task details and exposes the required actions", () => {
     const onEdit = vi.fn();
-    const onToggle = vi.fn();
     const onStatusChange = vi.fn();
     const onDelete = vi.fn();
     render(
@@ -28,7 +27,6 @@ describe("TaskCard", () => {
         task={task}
         isSaving={false}
         onEdit={onEdit}
-        onToggle={onToggle}
         onStatusChange={onStatusChange}
         onDelete={onDelete}
         onDragStart={vi.fn()}
@@ -43,14 +41,12 @@ describe("TaskCard", () => {
     expect(screen.getByText(task.assignee.name)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: `Edit ${task.title}` }));
-    fireEvent.click(screen.getByRole("button", { name: `Mark ${task.title} as complete` }));
     fireEvent.click(screen.getByRole("button", { name: `Delete ${task.title}` }));
     fireEvent.change(screen.getByRole("combobox", { name: `Status for ${task.title}` }), {
       target: { value: "done" },
     });
 
     expect(onEdit).toHaveBeenCalledWith(task);
-    expect(onToggle).toHaveBeenCalledWith(task);
     expect(onDelete).toHaveBeenCalledWith(task);
     expect(onStatusChange).toHaveBeenCalledWith(task, "done");
   });

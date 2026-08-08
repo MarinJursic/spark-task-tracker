@@ -106,8 +106,6 @@ export function useTaskTracker() {
     retry: load,
     addTask: (input: TaskInput) => runMutation(() => createTask(input)),
     editTask: (id: string, input: TaskInput) => runMutation(() => updateTask(id, input)),
-    toggleTask: (task: Task) =>
-      runMutation(() => updateTask(task.id, { status: task.completed ? "todo" : "done" })),
     moveTask: (task: Task, status: TaskStatus) =>
       runMutation(() => updateTask(task.id, { status })),
     deleteTask: removeTask,
