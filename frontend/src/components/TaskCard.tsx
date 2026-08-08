@@ -1,4 +1,4 @@
-import { Check, Pencil } from "lucide-react";
+import { Check, Pencil, Trash2 } from "lucide-react";
 
 import type { Task } from "../types";
 
@@ -6,12 +6,13 @@ interface TaskCardProps {
   task: Task;
   onEdit: (task: Task) => void;
   onToggle: (task: Task) => void;
+  onDelete: (task: Task) => void;
   isSaving: boolean;
 }
 
 const avatarClasses = ["avatar-orange", "avatar-violet", "avatar-blue", "avatar-green"];
 
-export function TaskCard({ task, onEdit, onToggle, isSaving }: TaskCardProps) {
+export function TaskCard({ task, onEdit, onToggle, onDelete, isSaving }: TaskCardProps) {
   const avatarClass = avatarClasses[task.assignee.id % avatarClasses.length];
 
   return (
@@ -35,15 +36,26 @@ export function TaskCard({ task, onEdit, onToggle, isSaving }: TaskCardProps) {
             </span>
             <h2>{task.title}</h2>
           </div>
-          <button
-            className="icon-button"
-            type="button"
-            disabled={isSaving}
-            aria-label={`Edit ${task.title}`}
-            onClick={() => onEdit(task)}
-          >
-            <Pencil size={18} aria-hidden="true" />
-          </button>
+          <div className="task-actions">
+            <button
+              className="icon-button"
+              type="button"
+              disabled={isSaving}
+              aria-label={`Edit ${task.title}`}
+              onClick={() => onEdit(task)}
+            >
+              <Pencil size={18} aria-hidden="true" />
+            </button>
+            <button
+              className="icon-button danger"
+              type="button"
+              disabled={isSaving}
+              aria-label={`Delete ${task.title}`}
+              onClick={() => onDelete(task)}
+            >
+              <Trash2 size={18} aria-hidden="true" />
+            </button>
+          </div>
         </div>
         <p className="task-description">{task.description}</p>
         <div className="assignee">

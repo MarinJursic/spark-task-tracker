@@ -9,9 +9,17 @@ interface TaskListProps {
   isSaving: boolean;
   onEdit: (task: Task) => void;
   onToggle: (task: Task) => void;
+  onDelete: (task: Task) => void;
 }
 
-export function TaskList({ tasks, hasFilters, isSaving, onEdit, onToggle }: TaskListProps) {
+export function TaskList({
+  tasks,
+  hasFilters,
+  isSaving,
+  onEdit,
+  onToggle,
+  onDelete,
+}: TaskListProps) {
   if (tasks.length === 0) {
     const Icon = hasFilters ? SearchX : ClipboardCheck;
     return (
@@ -36,6 +44,7 @@ export function TaskList({ tasks, hasFilters, isSaving, onEdit, onToggle }: Task
           isSaving={isSaving}
           onEdit={onEdit}
           onToggle={onToggle}
+          onDelete={onDelete}
         />
       ))}
     </section>

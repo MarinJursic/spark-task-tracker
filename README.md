@@ -1,6 +1,6 @@
 # Spark Team Task Tracker
 
-A focused full-stack task tracker for adding, editing, assigning, and completing team work.
+A focused full-stack task tracker for adding, editing, assigning, completing, and deleting team work.
 It was built for Spark Tutoring's Full Stack Developer challenge with an emphasis on product
 clarity, maintainable boundaries, accessibility, and deliberate scope.
 
@@ -22,13 +22,14 @@ clarity, maintainable boundaries, accessibility, and deliberate scope.
 | Edit a task | The same form is reused with existing values populated. |
 | Assign a task | Tasks reference one of four seeded team members. Reassignment is supported. |
 | Mark complete | A task can be toggled complete or incomplete without losing its content or owner. |
+| Additional requested enhancement: delete | A separately confirmed permanent action removes a task from the API and UI. |
 | Show title, status, and team member | Every task card exposes all three at a glance. |
 | Persist changes | All writes pass through the Django REST API and Django ORM. |
 | Optional product polish | Search, status filters, progress summary, responsive layouts, and clear loading/error states. |
 
-The application deliberately excludes deletion, authentication, due dates, priorities, and
-other speculative features. This keeps the submission faithful to the requested task while
-still demonstrating how the code could evolve if those requirements became real.
+The application deliberately excludes authentication, due dates, priorities, and other
+speculative features. This keeps the submission focused while still demonstrating how the code
+could evolve if those requirements became real.
 
 ## Product behaviour
 
@@ -39,10 +40,11 @@ The primary workflow is intentionally contained in one page:
 3. The created task is returned by the API, inserted into local state, and sorted with open work first.
 4. Editing uses the same form and can update wording or ownership.
 5. Completion is a small `PATCH` request; completed tasks move below open work.
-6. Search and status filters update the visible list without losing the canonical task state.
+6. Deletion requires a separate confirmation and removes the task only after the API succeeds.
+7. Search and status filters update the visible list without losing the canonical task state.
 
 Initial-load failures and action failures are intentionally separate. A failed initial request
-shows a retry state, while a failed create, edit, or status change leaves the current task list
+shows a retry state, while a failed create, edit, status change, or deletion leaves the current task list
 visible and reports the action error in a dismissible notification.
 
 ## Technology choices
@@ -76,7 +78,7 @@ The dependency direction is kept simple:
 - React components own presentation, interaction, and accessibility semantics.
 - `useTaskTracker` owns server-state loading, sorting, mutations, and user-facing failure state.
 - The API service owns HTTP transport, request serialization, and response-error translation.
-- View sets expose only the required list, create, and update use cases.
+- View sets expose the focused list, create, update, and delete use cases.
 - Serializers own the API shape, field validation, trimming, and assignee resolution.
 - Models own persisted constraints, relationships, ordering, identifiers, and timestamps.
 
@@ -95,15 +97,15 @@ sequenceDiagram
   participant DRF as Django REST API
   participant DB as Database
 
-  UI->>Hook: add/edit/toggle action
+  UI->>Hook: add/edit/toggle/delete action
   Hook->>API: typed input
-  API->>DRF: POST or PATCH JSON
+  API->>DRF: POST, PATCH, or DELETE
   DRF->>DRF: validate and normalize
-  DRF->>DB: persist through ORM
-  DB-->>DRF: saved task
-  DRF-->>API: canonical task response
-  API-->>Hook: typed Task
-  Hook->>Hook: replace and sort state
+  DRF->>DB: persist or remove through ORM
+  DB-->>DRF: mutation result
+  DRF-->>API: canonical task or 204 response
+  API-->>Hook: typed result
+  Hook->>Hook: replace, remove, and sort state
   Hook-->>UI: render updated task list
 ```
 
@@ -146,9 +148,11 @@ Validation is enforced at the API boundary:
 | `GET` | `/api/tasks/` | List tasks; accepts `q` and `status=all\|open\|completed`. |
 | `POST` | `/api/tasks/` | Create a task. |
 | `PATCH` | `/api/tasks/{id}/` | Edit, reassign, or change completion state. |
+| `DELETE` | `/api/tasks/{id}/` | Permanently delete a task after client confirmation. |
 
-`DELETE` is intentionally unavailable. The router cannot expose a destructive operation that
-the challenge did not request.
+Successful deletion returns `204 No Content`. The UI presents a dedicated confirmation dialog,
+names the task being removed, and states that the action cannot be undone before issuing the
+request.
 
 Example create request:
 
@@ -220,7 +224,8 @@ focused page.
 - Loading errors can be retried without refreshing the page.
 - Mutation errors do not replace already-loaded content.
 - Inputs and actions are disabled during a save to prevent duplicate submissions.
-- Successful mutations replace the canonical task returned by the server and reapply ordering.
+- Successful create/update mutations replace the canonical task returned by the server and
+  reapply ordering; successful deletion removes only the matching task.
 
 ### Accessibility and responsive behaviour
 
@@ -321,7 +326,7 @@ make check
 | Check | What it protects |
 | --- | --- |
 | Ruff lint and format | Python consistency, common defects, and review noise. |
-| 12 Django model/API tests | Required behaviour, persistence, validation, filters, bounds, and unavailable deletion. |
+| 12 Django model/API tests | Required behaviour, persistence, validation, filters, bounds, and deletion. |
 | Migration drift check | Prevents model changes from being committed without a migration. |
 | Django deployment check | Verifies secure production configuration with an explicit secret. |
 | Negative production-secret check | Proves production startup fails when the secret is missing. |
@@ -338,6 +343,7 @@ production dependency vulnerabilities reported.
 - create a task and assign it to a team member;
 - edit its content and reassign it;
 - mark it complete and incomplete;
+- cancel deletion, then confirm deletion and verify the task is removed;
 - search by title and description;
 - switch between all, open, and completed filters;
 - retry an initial-load failure without losing the page shell;
@@ -350,7 +356,7 @@ The project uses principles as decision tools rather than as labels:
 
 - **Single responsibility:** components, the tracker hook, transport service, serializers, and models each have a clear reason to change.
 - **DRY:** create/edit share one form; HTTP error parsing and task mutation handling are centralized.
-- **YAGNI:** no speculative authentication UI, deletion workflow, repository abstraction, state framework, or background infrastructure.
+- **YAGNI:** no speculative authentication UI, due-date system, repository abstraction, state framework, or background infrastructure.
 - **Explicit boundaries:** TypeScript interfaces and serializer fields define the client/server contract.
 - **Fail fast:** invalid API inputs and unsafe production configuration are rejected at their boundaries.
 - **Reversible change:** schema and demo data are managed through migrations, including a reversible seed step.
@@ -377,7 +383,7 @@ certification or formal conformance assessment:
 | SQLite by default | Fastest reviewer setup. | Not the intended concurrent production database. | Deploying or testing meaningful concurrency. |
 | Seeded team members | Meets the brief with deterministic demo data. | Not connected to a real identity directory. | Authentication and organization membership are introduced. |
 | No authentication | Avoids a pretend security surface. | API writes are public if deployed as-is. | Before any public or multi-user deployment. |
-| No delete/archive | Matches the exact required workflow. | Mistaken tasks cannot be removed in-product. | Product requirements define retention and recovery semantics. |
+| Confirmed hard delete | Keeps the requested enhancement explicit and simple. | There is no undo, archive, or audit recovery. | Real users require retention, compliance, or recovery guarantees. |
 | Client-side UI filtering | Instant interaction for a tiny list. | Requires all tasks to be loaded. | Task volume requires pagination or server-owned views. |
 | API also supports bounded filters | Keeps the endpoint useful to other clients. | Small duplication with UI filtering. | The UI moves to server pagination/filtering. |
 | No state library | Minimal concepts and dependencies. | The custom hook would become crowded across many routes. | Several screens share cached server state. |
@@ -389,6 +395,7 @@ certification or formal conformance assessment:
 - Team members and example tasks come from a migration rather than an administration workflow.
 - Task lists are unpaginated because the challenge dataset is deliberately small.
 - Search is simple case-insensitive text matching rather than indexed full-text search.
+- Deletion is permanent; there is no archive, undo window, or audit recovery.
 - There is no audit history or conflict detection for simultaneous edits.
 - `runserver` and Vite's development server are development tools, not a production topology.
 - The embedded 32-second preview supplements, but does not replace, the required narrated Loom.
@@ -416,7 +423,7 @@ important than adding task fields to a public write API.
 
 1. Validate due dates, priority, labels, comments, and notifications with users before selecting the smallest useful set.
 2. Replace seeded members with a real team directory and role-management workflow.
-3. Add archive or delete only after retention, recovery, and audit expectations are defined.
+3. Evolve permanent deletion into archive/restore when retention, recovery, and audit expectations are defined.
 4. Add task history so assignment and completion changes are attributable.
 5. Consider saved filters and ownership views when teams manage enough work to need them.
 
@@ -430,7 +437,7 @@ important than adding task fields to a public write API.
 
 ### 4. Deeper assurance
 
-1. Add a small end-to-end browser suite for the critical create/edit/assign/complete journey.
+1. Add a small end-to-end browser suite for the critical create/edit/assign/complete/delete journey.
 2. Add automated accessibility checks, while retaining manual keyboard and screen-reader review.
 3. Add contract or schema tests if more clients consume the API.
 4. Add performance budgets and load tests after real traffic and service-level objectives exist.
@@ -446,7 +453,7 @@ backend/
     tests/                Model and API behaviour
     models.py             Persisted task and team-member concepts
     serializers.py        API contract and validation
-    views.py              List/create/update coordination
+    views.py              List/create/update/delete coordination
 frontend/
   src/
     components/           Focused UI components and interaction tests

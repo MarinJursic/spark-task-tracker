@@ -122,12 +122,13 @@ class TaskApiTests(APITestCase):
         self.assertEqual(oversized_search_response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("q", oversized_search_response.data)
 
-    def test_delete_is_not_part_of_the_scoped_api(self) -> None:
+    def test_delete_task(self) -> None:
         url = reverse("task-detail", kwargs={"pk": self.open_task.id})
 
         response = self.client.delete(url)
 
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Task.objects.filter(pk=self.open_task.id).exists())
 
 
 class TeamMemberApiTests(APITestCase):

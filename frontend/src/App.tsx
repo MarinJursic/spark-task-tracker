@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Plus, RefreshCw } from "lucide-react";
 
 import { AppHeader } from "./components/AppHeader";
+import { DeleteTaskDialog } from "./components/DeleteTaskDialog";
 import { FilterBar } from "./components/FilterBar";
 import { StatsBar } from "./components/StatsBar";
 import { TaskFormDialog } from "./components/TaskFormDialog";
@@ -16,6 +17,7 @@ export default function App() {
   const [status, setStatus] = useState<TaskStatus>("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [deletingTask, setDeletingTask] = useState<Task | null>(null);
 
   const filteredTasks = useMemo(() => {
     const search = query.trim().toLowerCase();
@@ -95,6 +97,7 @@ export default function App() {
             isSaving={tracker.isSaving}
             onEdit={openEditDialog}
             onToggle={(task) => void tracker.toggleTask(task)}
+            onDelete={setDeletingTask}
           />
         )}
       </main>
@@ -106,6 +109,14 @@ export default function App() {
           isSaving={tracker.isSaving}
           onClose={() => setDialogOpen(false)}
           onSubmit={submitTask}
+        />
+      )}
+      {deletingTask && (
+        <DeleteTaskDialog
+          task={deletingTask}
+          isDeleting={tracker.isSaving}
+          onClose={() => setDeletingTask(null)}
+          onConfirm={() => tracker.deleteTask(deletingTask.id)}
         />
       )}
       {tracker.actionError && (

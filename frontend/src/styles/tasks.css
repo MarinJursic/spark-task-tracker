@@ -54,6 +54,11 @@
   gap: 20px;
 }
 
+.task-actions {
+  display: flex;
+  gap: 8px;
+}
+
 .task-content {
   min-width: 0;
 }

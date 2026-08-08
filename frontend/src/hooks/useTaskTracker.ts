@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { createTask, fetchTasks, fetchTeamMembers, updateTask } from "../services/api";
+import { createTask, deleteTask, fetchTasks, fetchTeamMembers, updateTask } from "../services/api";
 import type { Task, TaskInput, TeamMember } from "../types";
 
 function sortTasks(tasks: Task[]): Task[] {
@@ -75,6 +75,21 @@ export function useTaskTracker() {
     }
   };
 
+  const removeTask = async (id: string) => {
+    setIsSaving(true);
+    setActionError(null);
+    try {
+      await deleteTask(id);
+      setTasks((current) => current.filter((task) => task.id !== id));
+      return true;
+    } catch (mutationError) {
+      setActionError(toMessage(mutationError));
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return {
     tasks,
     members,
@@ -88,5 +103,6 @@ export function useTaskTracker() {
     editTask: (id: string, input: TaskInput) => runMutation(() => updateTask(id, input)),
     toggleTask: (task: Task) =>
       runMutation(() => updateTask(task.id, { completed: !task.completed })),
+    deleteTask: removeTask,
   };
 }

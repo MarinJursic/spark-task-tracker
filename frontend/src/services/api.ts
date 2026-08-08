@@ -32,6 +32,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new ApiError(getErrorMessage(payload));
   }
 
+  if (response.status === 204) return undefined as T;
   return response.json() as Promise<T>;
 }
 
@@ -55,4 +56,8 @@ export function updateTask(id: string, input: Partial<TaskInput & Pick<Task, "co
     method: "PATCH",
     body: JSON.stringify(input),
   });
+}
+
+export function deleteTask(id: string): Promise<void> {
+  return request<void>(`/tasks/${id}/`, { method: "DELETE" });
 }

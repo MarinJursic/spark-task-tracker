@@ -18,7 +18,16 @@ describe("TaskCard", () => {
   it("shows task details and exposes the required actions", () => {
     const onEdit = vi.fn();
     const onToggle = vi.fn();
-    render(<TaskCard task={task} isSaving={false} onEdit={onEdit} onToggle={onToggle} />);
+    const onDelete = vi.fn();
+    render(
+      <TaskCard
+        task={task}
+        isSaving={false}
+        onEdit={onEdit}
+        onToggle={onToggle}
+        onDelete={onDelete}
+      />,
+    );
 
     expect(screen.getByRole("heading", { name: task.title })).toBeInTheDocument();
     expect(screen.getByText("In progress")).toBeInTheDocument();
@@ -26,8 +35,10 @@ describe("TaskCard", () => {
 
     fireEvent.click(screen.getByRole("button", { name: `Edit ${task.title}` }));
     fireEvent.click(screen.getByRole("button", { name: `Mark ${task.title} as complete` }));
+    fireEvent.click(screen.getByRole("button", { name: `Delete ${task.title}` }));
 
     expect(onEdit).toHaveBeenCalledWith(task);
     expect(onToggle).toHaveBeenCalledWith(task);
+    expect(onDelete).toHaveBeenCalledWith(task);
   });
 });

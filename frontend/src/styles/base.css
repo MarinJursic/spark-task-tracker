@@ -101,6 +101,15 @@ button {
   border-color: var(--ink-soft);
 }
 
+.button.danger {
+  color: white;
+  background: var(--red);
+}
+
+.button.danger:hover:not(:disabled) {
+  background: #912018;
+}
+
 .icon-button {
   width: 42px;
   height: 42px;
@@ -116,4 +125,14 @@ button {
 .icon-button:hover:not(:disabled) {
   border-color: var(--orange);
   color: var(--orange-dark);
+}
+
+.icon-button.danger {
+  color: var(--red);
+}
+
+.icon-button.danger:hover:not(:disabled) {
+  border-color: #e7a29d;
+  color: var(--red);
+  background: #fff7f6;
 }

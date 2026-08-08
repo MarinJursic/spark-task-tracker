@@ -96,6 +96,33 @@
   gap: 10px;
 }
 
+.confirm-dialog {
+  width: min(510px, calc(100% - 32px));
+}
+
+.delete-warning {
+  padding: 18px;
+  border: 1px solid #f2b8b5;
+  border-radius: var(--radius-sm);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 12px;
+  color: var(--red);
+  background: #fff7f6;
+}
+
+.delete-warning p {
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+
+.delete-warning strong {
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
 .toast {
   position: fixed;
   right: 22px;
